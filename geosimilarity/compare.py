@@ -1,7 +1,8 @@
-from linestring_tools import line_to_coords
-from shapely.geometry import Polygon
-import similaritymeasures as sm
 import math
+import similaritymeasures as sm
+
+from .linestring_tools import line_to_coords
+from shapely.geometry import Polygon
 
 def compare(
         line1,
@@ -90,7 +91,7 @@ def compare(
         # In this case, the resulting clipped lines do not accurately
         # represent the similarity between the original lines
         if (clipped1.length < line1.length*clip_max
-                and clipped2.length < line2.length*clip_max):
+                or clipped2.length < line2.length*clip_max):
             return 0
 
         # Convert to discrete coordinates to input into similarity

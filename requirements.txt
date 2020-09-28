@@ -1,0 +1,7 @@
+###### Required packages #####
+geopandas
+math
+pandas
+pytest
+shapely
+similaritymeasures

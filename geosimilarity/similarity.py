@@ -1,7 +1,8 @@
 import geopandas as gpd
 import pandas as pd
-from compare import compare
-from crossjoin import df_crossjoin
+from .compare import compare
+from .crossjoin import df_crossjoin
+from .linestring_tools import flatten_multilinestring_df
 from shapely.geometry import LineString, LinearRing, MultiLineString
 
 def cartesian_similarity(df1, df2, keep_geom='left', **kwargs):
