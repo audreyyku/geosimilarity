@@ -1,1 +1,5 @@
-# TODO: python executable
+#!/bin/bash
+#!/usr/bin/env python
+
+BINPATH=`dirname $0`
+python "$BINPATH/../geosimilarity/main.py" $@

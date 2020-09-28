@@ -1,7 +1,9 @@
 ###### Required packages #####
+click
 geopandas
 math
 pandas
 pytest
 shapely
 similaritymeasures
+tabulate

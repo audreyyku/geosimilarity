@@ -1,7 +1,7 @@
 import math
 import similaritymeasures as sm
 
-from .linestring_tools import line_to_coords
+from linestring_tools import line_to_coords
 from shapely.geometry import Polygon
 
 def compare(
