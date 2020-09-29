@@ -3,17 +3,21 @@
 Computes similarity between geometries of two GeoDataFrames
 
 # Problem to solve:
-- Slight differences in geometries can make it difficult to perform certain operations such as geopandas.overlay(...)
+- Slight differences in geometries can make it difficult to perform certain operations such as ```geopandas.overlay(...)```
 - This is especially the case for LineStrings
 
 # Real world context:
-- Given two GeoDataFrames from two separate data sources, one representing the streets of city and one representing the bus routes of a city
-- Slight misalignments can make it so the LineStrings representing the same streets in the physical world are deemed different geometries and thus different streets
+- Given two GeoDataFrames from two separate data sources, one representing the streets of city (grey) and one representing the bus routes of a city (green)
+![oakland_bus_routes](images/oakland_bus_routes.png)
+![oakland_bus_routes_clipped](images/oakland_bus_routes_clipped.png)
+- See how some green and grey lines largely overlap, but have slight misalignments?
+- These misalignments can make it so the LineStrings representing the same streets in the physical world are deemed different geometries and thus different streets
 - How can we easily identify which street LineStrings are very similar (and are likely to represent the same street in the physical world)?
 
 # Implementation
 - Combines two GeoDataFrames and computes the similarity_score between the geometries of each GeoDataFrame
 - The similarity_score, which ranges from 0.0 (completely dissimilar) to 1.0 (completely similar), is determined based on the Frechet distance using the formula ```e^(-frechet/line.length)```
+- More on Frechet distance can be found [here](https://en.wikipedia.org/wiki/Fr%C3%A9chet_distance)
 
 # Set up
 
