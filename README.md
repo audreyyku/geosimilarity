@@ -20,7 +20,9 @@ Computes similarity between geometries of two GeoDataFrames
 $ git clone https://github.com/ukyerdua/geosimilarity.git
 $ cd geosimilarity
 $ pip3 install -r requirements.txt
+$ export PYTHONPATH="$PWD/geosimilarity"
 ```
+If you do not set the Python path to geosimilarity/geosimilarity/, then the test files will not be able to read the functions to be tested in geosimilarity/geosimilarity/*.py
 
 # Run CLI
 ## Use --help to see functions (commands) available:
