@@ -7,12 +7,12 @@ Computes similarity between geometries of two GeoDataFrames
 - This is especially the case for LineStrings
 
 # Real world context:
-- Given two GeoDataFrames from two separate data sources, one representing the streets of city (grey) and one representing the bus routes of a city (green)
+- The images below show two GeoDataFrames from two separate data sources, one representing the streets of the City of Oakland (grey) from [OSMnx](https://github.com/gboeing/osmnx) and one representing the bus routes of a city (green) from the [AC Transit website](http://www.actransit.org/bus-route-gis-shape-files/?did=3)
 ![oakland_bus_routes](images/oakland_bus_routes.png)
+- When zoomed in, see how the green and grey lines largely overlap, but have the slightest misalignments
 ![oakland_bus_routes_clipped](images/oakland_bus_routes_clipped.png)
-- See how some green and grey lines largely overlap, but have slight misalignments?
-- These misalignments can make it so the LineStrings representing the same streets in the physical world are deemed different geometries and thus different streets
-- How can we easily identify which street LineStrings are very similar (and are likely to represent the same street in the physical world)?
+- These miniscule misalignments can make it so the LineStrings representing the same streets in the physical world are deemed different geometries and thus different streets
+- The question at hand is: How can we easily identify which street LineStrings are very similar (and are likely to represent the same street in the physical world)?
 
 # Implementation
 - Combines two GeoDataFrames and computes the similarity_score between the geometries of each GeoDataFrame
