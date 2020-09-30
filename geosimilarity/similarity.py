@@ -5,7 +5,7 @@ from crossjoin import df_crossjoin
 from linestring_tools import flatten_multilinestring_df
 from shapely.geometry import LineString, LinearRing, MultiLineString
 
-def cartesian_similarity(df1, df2, keep_geom='left', **kwargs):
+def cartesian_similarity(df1, df2, keep_geom='geometry_x', **kwargs):
     """
     Computes Cartesian product of df1 and df2, and calculates the
     similarity_score for each row.
@@ -14,10 +14,9 @@ def cartesian_similarity(df1, df2, keep_geom='left', **kwargs):
     ----------
     df1 : GeoDataFrame
     df2 : GeoDataFrame
-    how : string
     keep_geom : string
-        Either 'left' or 'right', indicating which geometry column (from df1
-        and df2 respectively) to use in the returned GeoDataFrame
+        Either 'geometry_x' or 'geometry_y', indicating which geometry column
+        (from df1 and df2 respectively) to use in the returned GeoDataFrame
 
     Returns
     -------
@@ -34,10 +33,9 @@ def cartesian_similarity(df1, df2, keep_geom='left', **kwargs):
             lambda x: compare(x['geometry_x'], x['geometry_y'], **kwargs), \
         axis=1)
 
-    return gpd.GeoDataFrame(res, geometry = ('geometry_x' \
-                            if keep_geom == 'left' else 'geometry_y'))
+    return gpd.GeoDataFrame(res, geometry=keep_geom)
 
-def sindex_similarity(df1, df2, keep_geom='left', **kwargs):
+def sindex_similarity(df1, df2, keep_geom='geometry_x', **kwargs):
     """
     Merges df1 and df2 based on how the spatial index of df2 intersects with
     the geometry column of df1
@@ -46,10 +44,9 @@ def sindex_similarity(df1, df2, keep_geom='left', **kwargs):
     ----------
     df1 : GeoDataFrame
     df2 : GeoDataFrame
-    how : string
     keep_geom : string
-        Either 'left' or 'right', indicating which geometry column (from df1
-        and df2 respectively) to use in the returned GeoDataFrame
+        Either 'geometry_x' or 'geometry_y', indicating which geometry column
+        (from df1 and df2 respectively) to use in the returned GeoDataFrame
 
     Returns
     -------
@@ -103,10 +100,16 @@ def sindex_similarity(df1, df2, keep_geom='left', **kwargs):
             # Insert row into result DataFrame
             res.loc[(idx1, idx2),:] = intersect
 
-    return gpd.GeoDataFrame(res, geometry = ('geometry_x'
-                            if keep_geom == 'left' else 'geometry_y'))
+    return gpd.GeoDataFrame(res, geometry=keep_geom)
 
-def similarity(df1, df2, how='sindex', drop_zeroes=False, **kwargs):
+def similarity(
+            df1,
+            df2,
+            how='sindex',
+            keep_geom='geometry_x',
+            drop_zeroes=False,
+            **kwargs
+        ):
     """
     Computes similarity between geometries of two GeoDataFrames.
 
@@ -120,6 +123,9 @@ def similarity(df1, df2, how='sindex', drop_zeroes=False, **kwargs):
         Either 'sindex' or 'cartesian'. Determines whether joining df1 and
         df2 will be performed by intersecting Spatial Index bounding boxes
         or by getting the Cartesian product of df1 and df2.
+    keep_geom : string
+        Either 'geometry_x' or 'geometry_y', indicating which geometry column
+        (from df1 and df2 respectively) to use in the returned GeoDataFrame
     drop_zeroes : bool
         If True, the rows in the returned GeoDataFrame with a similarity
         score of 0 will be dropped.
@@ -184,10 +190,10 @@ def similarity(df1, df2, how='sindex', drop_zeroes=False, **kwargs):
 
     # Approach 1: Get Cartesian product
     if how == 'cartesian':
-        res =  cartesian_similarity(df1, df2, **kwargs)
+        res =  cartesian_similarity(df1, df2, keep_geom, **kwargs)
     # Approach 2: R-tree spatial index merge
     elif how == 'sindex':
-        res = sindex_similarity(df1, df2, **kwargs)
+        res = sindex_similarity(df1, df2, keep_geom, **kwargs)
     else:
         raise ValueError(
             "`how` was '{0}' but is expected to be in {1}"
