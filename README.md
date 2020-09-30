@@ -15,24 +15,32 @@ When zoomed in, see how the green and grey lines largely overlap, but have the s
 
 ![bus_streets_clipped](images/bus_streets_clipped.png)
 
-These miniscule misalignments can make it so the LineStrings representing the same streets in the physical world are deemed different geometries and thus different streets.
+These miniscule misalignments can make it so the LineStrings representing the same streets in the physical world are deemed different geometries and thus different streets. Below are the streets and bus routes displayed side by side.
 
-Below is what happens when you try to use ```gpd.overlay(...)``` between two LineString GeoDataFrames, which currently only supports Polygon GeoDataFrames:
+## Original GeoDataFrames
+
+<img src = "images/streets_clipped.png" width ="450" /> <img src = "images/bus_clipped.png" width ="450" />
+
+## gpd.overlay - not supported
+
+This is what happens when you try to use ```gpd.overlay(...)``` between two LineString GeoDataFrames, which currently only supports Polygon GeoDataFrames:
 
 ![gpd_overlay_fail](images/gpd_overlay_fail.png)
 
-Below is what happens when you try to use ```gpd.sjoin(..., how='intersection')```, which produces a lot of false positive intersections:
+## gpd.sjoin - messy results
+This is what happens when you try to use ```gpd.sjoin(..., how='intersection')```, which produces a lot of false positive intersections:
 
-![gpd_sjoin_bus_streets](images/gpd_sjoin_bus_streets.png)
+<img src = "images/gpd_sjoin_bus_streets.png" width ="450" /> <img src = "images/bus_clipped.png" width ="450" />
 
 **The question at hand is: How can we easily identify which street LineStrings are very similar (and are likely to represent the same street in the physical world)?**
 
+## geosimilarity.similarity - a new and improved alternative!
 By using the geosimilarity CLI and running the following from the terminal:
 
 ```
 $ bin/geosimilarity similarity data/bus_clipped/bus_clipped.shp data/streets_clipped/streets_clipped.shp --max_rows=3 -d geometry_x --clip_max=0.1 --rf="data/bus_streets_similarity.shp"
-Columns ['geometry_x'] dropped from result.
 
+Columns ['geometry_x'] dropped from result.
 
 +----------+-----------+---------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------+-----------+-----------+--------------------+
 |          |   value_y | geometry_y                                                                                                                                                                                                          |   index_x |   value_x |   similarity_score |
@@ -42,13 +50,14 @@ Columns ['geometry_x'] dropped from result.
 | (0, 514) |         1 | LINESTRING (-122.2982572 37.8059792, -122.2981685 37.8060889)                                                                                                                                                       |         0 |         1 |           0        |
 +----------+-----------+---------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------+-----------+-----------+--------------------+
 Result saved to data/bus_streets_similarity.shp
+
 ```
 
 The result saved to ```data/bus_streets_similarity.shp``` contains the following GeoDataFrame, which when filtered by ```similarity_score``` using the following line ```plot = bus_streets_similarity[bus_streets_similarity['similarity'].astype(float) > 0.6]```, produces the following map.
 
-![similarity](images/similarity.png)
+<img src = "images/similarity.png" width ="450" /> <img src = "images/bus_clipped.png" width ="450" />
 
-There are still some false positives, and the parameters could be more easily tweaked, but this is progress from the existing geopandas operations, and hopefully will improve with more contributions.
+Although it still does not produce a perfect result and the parameters could be more easily tweaked, this is progress from the existing geopandas operations and hopefully will improve with more contributions.
 
 # Implementation
 - Combines two GeoDataFrames and computes the similarity_score between the geometries of each GeoDataFrame
