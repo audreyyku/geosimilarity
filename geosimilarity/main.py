@@ -162,11 +162,10 @@ def print_gdf(filepath, max_rows=None):
     Print tabulated GeoDataFrame.
     """
     gdf = gpd.read_file(filepath)
-    result = _flatten_multilinestring_df(gdf)
     # Print result table
     if max_rows != 0:
         print('\n')
-        print(tabulate(result.head(max_rows), headers='keys', tablefmt='psql'))
+        print(tabulate(gdf.head(max_rows), headers='keys', tablefmt='psql'))
         print('\n')
 
 @click.command()
