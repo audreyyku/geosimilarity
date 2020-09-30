@@ -31,7 +31,7 @@ $ export PYTHONPATH="$PWD/geosimilarity"
 If you do not set the ```PYTHONPATH``` to ```geosimilarity/geosimilarity/```, then the test files will not be able to read the functions to be tested in ```geosimilarity/geosimilarity/*.py```
 
 # Run CLI
-## Use --help to see functions (Commands) available:
+## To see functions (Commands) available:
 
 ```
 $ bin/geosimilarity
