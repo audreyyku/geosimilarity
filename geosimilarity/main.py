@@ -92,7 +92,7 @@ def compare(
 dataframe.')
 @click.option('--max_rows', default=None, help='Max rows of result \
 GeoDataFrame to print.', type=int)
-def flatten_multilinestring_df(filepath, max_rows=None, rf=''):
+def flatten_multilinestring_df(filepath, rf='', max_rows=None):
     """
     Converts a GeoDataFrame with MultiLineStrings in the geometry column to
     a GeoDataFrame with LineStrings in the geometry column instead.
@@ -126,8 +126,8 @@ def flatten_multilinestring_df(filepath, max_rows=None, rf=''):
 
 @click.command()
 @click.argument('filepath', type=click.Path(exists=True))
-@click.option('--rf', type=click.Path(), help='Filepath to store result \
-dataframe.')
+@click.option('--rf', type=click.Path(), help='Filepath to write result \
+coordinates')
 def line_to_coords(filepath, rf=''):
     """
     Converts (Multi)LineString to 2d-array of Point coordinates
