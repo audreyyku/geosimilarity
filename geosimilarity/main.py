@@ -80,6 +80,8 @@ def similarity(
     -------
     Prints result GeoDataFrame as well as file save success/failure messages
     """
+    # Print new line for visual clarity between function call and output
+    print('\n')
 
     # Read GeoDataFrames
     df1 = gpd.read_file(filepath1)
@@ -111,20 +113,26 @@ def similarity(
                 .format(rf))
             return
 
-        # Ensure result table does not contain two geometry columns if result
-        # filepath is a shapefile
-        if ('.shp' in rf) \
-                and ('geometry_x' in result.columns) \
+        if '.shp' in rf:
+            # Ensure result table does not contain two geometry columns if result
+            # filepath is a shapefile
+            if ('geometry_x' in result.columns) \
                 and ('geometry_y' in result.columns):
-            print('Result not saved to file.')
-            print('Only one geometry column is allowed to save to a shapefile.')
-            print('Please set --drop_col (-d) to either {} or {}.'
-                .format('geometry_x', 'geometry_y'))
-            return
+                print('Result not saved to file.')
+                print('Only one geometry column is allowed to save to *.shp.')
+                print('Please set --drop_col (-d) to either {} or {}.'
+                    .format('geometry_x', 'geometry_y'))
+                print('\n')
+                return
+            else:
+                # Save result to file
+                result.to_file(rf)
 
-        # Save result to file
-        result.to_file(rf)
-        print('Result saved to {}'.format(rf))
+        if '.csv' in rf:
+            # Save result to csv
+            result.to_csv(rf)
+
+        print('Result saved to {}\n'.format(rf))
 
 @click.command()
 @click.argument('filepath', type=click.Path(exists=True))
