@@ -19,7 +19,7 @@ These miniscule misalignments can make it so the LineStrings representing the sa
 
 ## Original GeoDataFrames
 
-<img src = "images/streets_clipped.png" width ="450" /> <img src = "images/bus_clipped.png" width ="450" />
+<img src = "images/streets_clipped.png" width ="400" /> <img src = "images/bus_clipped.png" width ="400" />
 
 ## gpd.overlay - not supported
 
@@ -30,7 +30,7 @@ This is what happens when you try to use ```gpd.overlay(...)``` between two Line
 ## gpd.sjoin - messy results
 This is what happens when you try to use ```gpd.sjoin(..., how='intersection')```, which produces a lot of false positive intersections:
 
-<img src = "images/gpd_sjoin_bus_streets.png" width ="450" /> <img src = "images/bus_clipped.png" width ="450" />
+<img src = "images/gpd_sjoin_bus_streets.png" width ="400" /> <img src = "images/bus_clipped.png" width ="400" />
 
 **The question at hand is: How can we easily identify which street LineStrings are very similar (and are likely to represent the same street in the physical world)?**
 
@@ -55,7 +55,7 @@ Result saved to data/bus_streets_similarity.shp
 
 The result saved to ```data/bus_streets_similarity.shp``` contains the following GeoDataFrame, which when filtered by ```similarity_score``` using the following line ```plot = bus_streets_similarity[bus_streets_similarity['similarity'].astype(float) > 0.6]```, produces the following map.
 
-<img src = "images/similarity.png" width ="450" /> <img src = "images/bus_clipped.png" width ="450" />
+<img src = "images/similarity.png" width ="400" /> <img src = "images/bus_clipped.png" width ="400" />
 
 Although it still does not produce a perfect result and the parameters could be more easily tweaked, this is progress from the existing geopandas operations and hopefully will improve with more contributions.
 
