@@ -7,12 +7,48 @@ Computes similarity between geometries of two GeoDataFrames
 - This is especially the case for LineStrings
 
 # Real world context:
-- The images below show two GeoDataFrames from two separate data sources, one representing the streets of the City of Oakland (grey) from [OSMnx](https://github.com/gboeing/osmnx) and one representing the bus routes of a city (green) from the [AC Transit website](http://www.actransit.org/bus-route-gis-shape-files/?did=3)
-![oakland_bus_routes](images/oakland_bus_routes.png)
-- When zoomed in, see how the green and grey lines largely overlap, but have the slightest misalignments
-![oakland_bus_routes_clipped](images/oakland_bus_routes_clipped.png)
-- These miniscule misalignments can make it so the LineStrings representing the same streets in the physical world are deemed different geometries and thus different streets
-- The question at hand is: How can we easily identify which street LineStrings are very similar (and are likely to represent the same street in the physical world)?
+The images below show two GeoDataFrames from two separate data sources, one representing the streets of the City of Oakland (grey) from [OSMnx](https://github.com/gboeing/osmnx) and one representing the bus routes of a city (green) from the [AC Transit website](http://www.actransit.org/bus-route-gis-shape-files/?did=3)
+
+![full_oakland_map](images/full_oakland_map.png)
+
+When zoomed in, see how the green and grey lines largely overlap, but have the slightest misalignments.
+
+![bus_streets_clipped](images/bus_streets_clipped.png)
+
+These miniscule misalignments can make it so the LineStrings representing the same streets in the physical world are deemed different geometries and thus different streets.
+
+Below is what happens when you try to use ```gpd.overlay(...)``` between two LineString GeoDataFrames, which currently only supports Polygon GeoDataFrames:
+
+![gpd_overlay_fail](images/gpd_overlay_fail.png)
+
+Below is what happens when you try to use ```gpd.sjoin(..., how='intersection')```, which produces a lot of false positive intersections:
+
+![gpd_sjoin_bus_streets](images/gpd_sjoin_bus_streets.png)
+
+**The question at hand is: How can we easily identify which street LineStrings are very similar (and are likely to represent the same street in the physical world)?**
+
+By using the geosimilarity CLI and running the following from the terminal:
+
+```
+$ bin/geosimilarity similarity data/bus_clipped/bus_clipped.shp data/streets_clipped/streets_clipped.shp --max_rows=3 -d geometry_x --clip_max=0.1 --rf="data/bus_streets_similarity.shp"
+Columns ['geometry_x'] dropped from result.
+
+
++----------+-----------+---------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------+-----------+-----------+--------------------+
+|          |   value_y | geometry_y                                                                                                                                                                                                          |   index_x |   value_x |   similarity_score |
+|----------+-----------+---------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------+-----------+-----------+--------------------|
+| (0, 515) |         1 | LINESTRING (-122.2982572 37.8059792, -122.2980441 37.8059234, -122.2979901 37.8059093, -122.2978033 37.8058744, -122.2975446 37.8058411, -122.2973577 37.8058121, -122.2971652 37.8057709, -122.2970636 37.8057943) |         0 |         1 |           0.720063 |
+| (0, 223) |         1 | LINESTRING (-122.2970636 37.8057943, -122.2971417 37.8058519, -122.2972276 37.8058709, -122.2977915 37.8060014, -122.2979687 37.8060425, -122.2980113 37.8060524, -122.2981685 37.8060889)                          |         0 |         1 |           0.375816 |
+| (0, 514) |         1 | LINESTRING (-122.2982572 37.8059792, -122.2981685 37.8060889)                                                                                                                                                       |         0 |         1 |           0        |
++----------+-----------+---------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------+-----------+-----------+--------------------+
+Result saved to data/bus_streets_similarity.shp
+```
+
+The result saved to ```data/bus_streets_similarity.shp``` contains the following GeoDataFrame, which when filtered by ```similarity_score``` using the following line ```plot = bus_streets_similarity[bus_streets_similarity['similarity'].astype(float) > 0.6]```, produces the following map.
+
+![similarity](images/similarity.png)
+
+There are still some false positives, and the parameters could be more easily tweaked, but this is progress from the existing geopandas operations, and hopefully will improve with more contributions.
 
 # Implementation
 - Combines two GeoDataFrames and computes the similarity_score between the geometries of each GeoDataFrame
