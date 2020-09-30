@@ -31,7 +31,7 @@ $ export PYTHONPATH="$PWD/geosimilarity"
 If you do not set the ```PYTHONPATH``` to ```geosimilarity/geosimilarity/```, then the test files will not be able to read the functions to be tested in ```geosimilarity/geosimilarity/*.py```
 
 # Run CLI
-## Use --help to see functions (commands) available:
+## Use --help to see functions (Commands) available:
 
 ```
 $ bin/geosimilarity
@@ -45,8 +45,8 @@ Options:
   --help  Show this message and exit.
 
 Commands:
-  compare
-  similarity
+  compare     Calls geosimilarity/compare.py using input from the CLI...
+  similarity  Calls geosimilarity/similarity.py using input from the CLI...
 ```
 
 ## To run "compare" on two LineStrings
@@ -67,43 +67,57 @@ $ bin/geosimilarity compare --help
 $ bin/geosimilarity compare --help
 Usage: main.py compare [OPTIONS] FILEPATH
 
+  Calls geosimilarity/compare.py using input from the CLI
+  ...(docstring abridged)...
+
 Options:
-  --method TEXT        Which similarity measure to use calculate
-                       similarity_score. Currently supports 'frechet_dist'
-  --precision INTEGER  Decimal precision to round similarity_score. Default=6.
-  --clip TEXT          If True, the similarity_score will be calculated based
-                       on the clipped portion of the original geometries
-                       within the intersection of each geometry's bounding
-                       box. If False, the similarity_score will compare the
-                       entirety of the original geometries.
-  --clip_max FLOAT     The minimum ratio of length of the clipped geometry to
-                       the length of the original geometry, at which to return
-                       a non-zero similarity_score.
-  --help               Show this message and exit.
+  --method [frechet_dist]  Which similarity measure to use calculate
+                           similarity_score. Currently supports 'frechet_dist'
+  --precision INTEGER      Decimal precision to round similarity_score.
+                           Default=6.
+  --clip BOOLEAN           If True, the similarity_score will be calculated
+                           based on the clipped portion of the original
+                           geometries within the intersection of each
+                           geometry's bounding box. If False, the
+                           similarity_score will compare the entirety of the
+                           original geometries.
+  --clip_max FLOAT RANGE   The minimum ratio of length of the clipped geometry
+                           to the length of the original geometry, at which to
+                           return a non-zero similarity_score.
+  --help                   Show this message and exit.
 ```
 
 **Example:**
 
 ```
-$ bin/geosimilarity compare data/test_compare_files/test_compare1
+$ touch test
+$ vim test
+```
+In vim:
+- press _i_ to Insert text
+- write two lines, each containing LineStrings with the following format
+    ```
+    LINESTRING (0 0, 1 1, 2 2)
+    LINESTRING (0 0.01, 1 1.01, 2 2.01)
+    ```
+- press _esc_ 
+- type _:wq_ and press _enter_ to save and exit vim
+```
+$ bin/geosimilarity compare test --precision=8
 
-The similarity score between "LINESTRING (0 0, 1 1, 2 2)" and "LINESTRING (0 0.01, 1 1.01, 2 2.01)" is 0.996471
-```
-The file ```data/test_compare_files/test_compare1``` contains the following:
-```
-LINESTRING (0 0, 1 1, 2 2)
-LINESTRING (0 0.01, 1 1.01, 2 2.01)
+The similarity score between "LINESTRING (0 0, 1 1, 2 2)" and "LINESTRING (0 0.01, 1 1.01, 2 2.01)" is: 
+0.99647071
 ```
 
 ## To run "similarity" on two GeoDataFrames
 
 ```
-$ bin/geosimilarity similarity [filepath1] [filepath2] [--rf=''] [--how='sindex'] [--drop_zeroes=False] [--keep_geom='left'] [--method='frechet_dist'] [--precision=6] [--clip=True] [--clip_max=0.5]
+$ bin/geosimilarity similarity [filepath1] [filepath2] [--rf=''] [--drop_col=''] [--how='sindex'] [--drop_zeroes=False] [--keep_geom='left'] [--method='frechet_dist'] [--precision=6] [--clip=True] [--clip_max=0.5]
 ```
 
 ```filepath1``` and ```filepath2``` must contain a ```*.shp``` file with its corresponding ```*.cpg```, ```*.dbf```, ```*.prj```, and ```*.shx``` files in the same directory to be read by ```geopandas.read_file(*.shp)```. 
 
-If you want to save the result table to a file, you must provide a filepath to ```--rf``` that ends in ```*.csv``` (saving to ```*.shp``` will come soon, currently shapefiles can only contain one geometry column, whereas the result similarity table contains two geometry columns).
+If you want to save the result table to a file, you must provide a filepath to ```--rf``` that ends in ```*.csv``` or ```*.shp``` (to save to ```*.shp```, you must either set ```--drop_col``` to ```geometry_x``` or ```geometry_y``` because shapefiles can only support one geometry column).
 
 **Use --help to see descriptions of options**
 
@@ -115,43 +129,97 @@ $ bin/geosimilarity similarity --help
 $ bin/geosimilarity similarity --help
 Usage: main.py similarity [OPTIONS] FILEPATH1 FILEPATH2
 
+  Calls geosimilarity/similarity.py using input from the
+  CLI
+  ...(docstring abridged)...
+  
 Options:
-  --rf TEXT            Filepath to store result dataframe.
-  --how TEXT           'sindex' to merge GeoDataFrames on spatial index,
-                       'cartesian' to merge by cartesian product.
-  --drop_zeroes TEXT   If True, rows in the result GeoDataFrame with a
-                       similarity_score of 0 will be dropped.
-  --keep_geom TEXT     'left' and 'right' to set geometry column in result
-                       GeoDataFrame to df1's and df2's original geometry
-                       column, respectively.
-  --method TEXT        Which similarity measure to use calculate
-                       similarity_score. Currently supports 'frechet_dist'
-  --precision INTEGER  Decimal precision to round similarity_score. Default=6.
-  --clip TEXT          If True, the similarity_score will be calculated based
-                       on the clipped portion of the original geometries
-                       within the intersection of each geometry's bounding
-                       box. If False, the similarity_score will compare the
-                       entirety of the original geometries.
-  --clip_max FLOAT     The minimum ratio of length of the clipped geometry to
-                       the length of the original geometry, at which to return
-                       a non-zero similarity_score.
-  --help               Show this message and exit.
+  --rf PATH                       Filepath to store result dataframe.
+  -d, --drop_col TEXT             Columns to drop before saving result
+                                  GeoDataFrame to file (multiple columns
+                                  allowed: -d col1 -d col2).
+  --how [sindex|cartesian]        'sindex' to merge GeoDataFrames on spatial
+                                  index, 'cartesian' to merge by cartesian
+                                  product.
+  --drop_zeroes BOOLEAN           If True, rows in the result GeoDataFrame
+                                  with a similarity_score of 0 will be
+                                  dropped.
+  --keep_geom [geometry_x|geometry_y]
+                                  'left' and 'right' to set geometry column in
+                                  result GeoDataFrame to df1's and df2's
+                                  original geometry column, respectively.
+  --method [frechet_dist]         Which similarity measure to use calculate
+                                  similarity_score. Currently supports
+                                  'frechet_dist'
+  --precision INTEGER             Decimal precision to round similarity_score.
+                                  Default=6.
+  --clip BOOLEAN                  If True, the similarity_score will be
+                                  calculated based on the clipped portion of
+                                  the original geometries within the
+                                  intersection of each geometry's bounding
+                                  box. If False, the similarity_score will
+                                  compare the entirety of the original
+                                  geometries.
+  --clip_max FLOAT RANGE          The minimum ratio of length of the clipped
+                                  geometry to the length of the original
+                                  geometry, at which to return a non-zero
+                                  similarity_score.
+  --help                          Show this message and exit.
 ```
 
-**Example:**
+**Example 1: Save to shapefile and drop geometry_y**
 
 ```
-$ bin/geosimilarity similarity data/line1/line1.shp data/line1_distance_gradient/line1_distance_gradient.shp --rf='data/result.csv' --how='cartesian' --precision=20 --drop_zeroes=True --clip=False
-+--------+-----------+-----------------------------------------------------------+-----------+-----------------------------------------------------------------+--------------------+
-|        |   value_x | geometry_x                                                |   value_y | geometry_y                                                      |   similarity_score |
-|--------+-----------+-----------------------------------------------------------+-----------+-----------------------------------------------------------------+--------------------|
-| (0, 0) |         1 | LINESTRING (-122.3 37.82, -122.31 37.825, -122.32 37.822) |         1 | LINESTRING (-122.3 37.82, -122.31 37.825, -122.32 37.822)       |           1        |
-| (0, 1) |         1 | LINESTRING (-122.3 37.82, -122.31 37.825, -122.32 37.822) |         1 | LINESTRING (-122.3 37.8205, -122.3105 37.825, -122.3205 37.822) |           0.977139 |
-| (0, 2) |         1 | LINESTRING (-122.3 37.82, -122.31 37.825, -122.32 37.822) |         1 | LINESTRING (-122.3 37.822, -122.31 37.827, -122.319 37.824)     |           0.901746 |
-| (0, 3) |         1 | LINESTRING (-122.3 37.82, -122.31 37.825, -122.32 37.822) |         1 | LINESTRING (-122.3 37.824, -122.31 37.829, -122.32 37.826)      |           0.831097 |
-| (0, 4) |         1 | LINESTRING (-122.3 37.82, -122.31 37.825, -122.32 37.822) |         1 | LINESTRING (-122.3 37.8285, -122.32 37.8285)                    |           0.612607 |
-+--------+-----------+-----------------------------------------------------------+-----------+-----------------------------------------------------------------+--------------------+
-Result saved to data/result.csv
+$ bin/geosimilarity similarity data/line1/line1.shp data/line1_distance_gradient/line1_distance_gradient.shp --rf='data/result.shp' --drop_col=geometry_y
+
+Columns ['geometry_y'] dropped from result.
++--------+-----------+-----------+-----------------------------------------------------------+--------------------+
+|        |   value_y |   value_x | geometry_x                                                |   similarity_score |
+|--------+-----------+-----------+-----------------------------------------------------------+--------------------|
+| (0, 1) |         1 |         1 | LINESTRING (-122.3 37.82, -122.31 37.825, -122.32 37.822) |           0.954801 |
+| (0, 0) |         1 |         1 | LINESTRING (-122.3 37.82, -122.31 37.825, -122.32 37.822) |           1        |
+| (0, 3) |         1 |         1 | LINESTRING (-122.3 37.82, -122.31 37.825, -122.32 37.822) |           0        |
+| (0, 2) |         1 |         1 | LINESTRING (-122.3 37.82, -122.31 37.825, -122.32 37.822) |           0        |
++--------+-----------+-----------+-----------------------------------------------------------+--------------------+
+Result saved to data/result.shp
+
+```
+
+**Example 2: Save to csv and keep both geometry columns**
+
+```
+$ bin/geosimilarity similarity data/line1/line1.shp data/line1_distance_gradient/line1_distance_gradient.shp --rf='data/result2.csv' 
+
++--------+-----------+-----------------------------------------------------------------+-----------+-----------------------------------------------------------+--------------------+
+|        |   value_y | geometry_y                                                      |   value_x | geometry_x                                                |   similarity_score |
+|--------+-----------+-----------------------------------------------------------------+-----------+-----------------------------------------------------------+--------------------|
+| (0, 1) |         1 | LINESTRING (-122.3 37.8205, -122.3105 37.825, -122.3205 37.822) |         1 | LINESTRING (-122.3 37.82, -122.31 37.825, -122.32 37.822) |           0.954801 |
+| (0, 0) |         1 | LINESTRING (-122.3 37.82, -122.31 37.825, -122.32 37.822)       |         1 | LINESTRING (-122.3 37.82, -122.31 37.825, -122.32 37.822) |           1        |
+| (0, 3) |         1 | LINESTRING (-122.3 37.824, -122.31 37.829, -122.32 37.826)      |         1 | LINESTRING (-122.3 37.82, -122.31 37.825, -122.32 37.822) |           0        |
+| (0, 2) |         1 | LINESTRING (-122.3 37.822, -122.31 37.827, -122.319 37.824)     |         1 | LINESTRING (-122.3 37.82, -122.31 37.825, -122.32 37.822) |           0        |
++--------+-----------+-----------------------------------------------------------------+-----------+-----------------------------------------------------------+--------------------+
+Result saved to data/result2.csv
+
+```
+
+**Example 3: Unsuccessfully attempt to save to shp AND keep both geometry columns**
+
+
+```
+$ bin/geosimilarity similarity data/line1/line1.shp data/line1_distance_gradient/line1_distance_gradient.shp --rf='data/result3.shp' 
+
++--------+-----------+-----------------------------------------------------------------+-----------+-----------------------------------------------------------+--------------------+
+|        |   value_y | geometry_y                                                      |   value_x | geometry_x                                                |   similarity_score |
+|--------+-----------+-----------------------------------------------------------------+-----------+-----------------------------------------------------------+--------------------|
+| (0, 1) |         1 | LINESTRING (-122.3 37.8205, -122.3105 37.825, -122.3205 37.822) |         1 | LINESTRING (-122.3 37.82, -122.31 37.825, -122.32 37.822) |           0.954801 |
+| (0, 0) |         1 | LINESTRING (-122.3 37.82, -122.31 37.825, -122.32 37.822)       |         1 | LINESTRING (-122.3 37.82, -122.31 37.825, -122.32 37.822) |           1        |
+| (0, 3) |         1 | LINESTRING (-122.3 37.824, -122.31 37.829, -122.32 37.826)      |         1 | LINESTRING (-122.3 37.82, -122.31 37.825, -122.32 37.822) |           0        |
+| (0, 2) |         1 | LINESTRING (-122.3 37.822, -122.31 37.827, -122.319 37.824)     |         1 | LINESTRING (-122.3 37.82, -122.31 37.825, -122.32 37.822) |           0        |
++--------+-----------+-----------------------------------------------------------------+-----------+-----------------------------------------------------------+--------------------+
+Result not saved to file.
+Only one geometry column is allowed to save to *.shp.
+Please set --drop_col (-d) to either geometry_x or geometry_y.
+
 ```
 
 # Run Tests
