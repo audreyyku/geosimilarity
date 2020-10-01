@@ -62,7 +62,18 @@ Although it still does not produce a perfect result and the parameters could be 
 # Implementation
 - Combines two GeoDataFrames and computes the similarity_score between the geometries of each GeoDataFrame
 - The similarity_score, which ranges from 0.0 (completely dissimilar) to 1.0 (completely similar), is determined based on the Frechet distance using the formula ```e^(-frechet/line.length)```
-- More on Frechet distance can be found [here](https://en.wikipedia.org/wiki/Fr%C3%A9chet_distance)
+
+### Fréchet distance
+- [Fréchet distance Wiki](https://en.wikipedia.org/wiki/Fr%C3%A9chet_distance)
+> Imagine a person traversing a finite curved path while walking their dog on a leash, with the dog traversing a separate finite curved path. Each can vary their speed to keep slack in the leash, but neither can move backwards. The Fréchet distance between the two curves is the length of the shortest leash sufficient for both to traverse their separate paths from start to finish. Note that the definition is symmetric with respect to the two curves—the Frechet distance would be the same if the dog were walking its owner.
+
+<img src = "images/frechet-distance-dog.jpeg" width ="600" /> 
+
+[image source 1](https://www.slideshare.net/shripadthite/frechettalk)
+
+<img src = "images/frechet-distance.jpeg" width ="600" />
+
+[image source 2](https://www.researchgate.net/publication/320723538_An_Efficient_Query_Algorithm_for_Trajectory_Similarity_Based_on_Frechet_Distance_Threshold/figures?lo=1)
 
 # Set up
 
