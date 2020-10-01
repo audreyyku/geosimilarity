@@ -28,7 +28,7 @@ This is what happens when you try to use ```gpd.overlay(...)``` between two Line
 ![gpd_overlay_fail](images/gpd_overlay_fail.png)
 
 ## gpd.sjoin - messy results
-This is what happens when you try to use ```gpd.sjoin(..., how='intersection')```, which produces a lot of false positive intersections:
+This is what happens when you try to use ```gpd.sjoin(..., how='intersection')```, which does not capture similar lines that never intersect and includes dissimilar, but intersecting segments:
 
 <img src = "images/gpd_sjoin_bus_streets.png" width ="400" /> <img src = "images/bus_clipped.png" width ="400" />
 
