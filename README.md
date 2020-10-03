@@ -1,6 +1,6 @@
 # Geosimilarity
 
-Computes similarity between geometries of two GeoDataFrames
+Computes similarity between geospatial data.
 
 # Problem to solve:
 - Slight differences in geometries can make it difficult to perform certain operations such as ```geopandas.overlay(...)```
